@@ -1,5 +1,6 @@
 /.idea/
 /private/
 /storage/
-/litemall.iml
+*.iml
 .idea
+
