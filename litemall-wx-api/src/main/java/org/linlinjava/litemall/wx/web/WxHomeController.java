@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.util.ResponseUtil;
+import org.linlinjava.litemall.db.domain.LitemallAd;
 import org.linlinjava.litemall.db.domain.LitemallCategory;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.service.*;
@@ -84,8 +85,6 @@ public class WxHomeController {
 
         Map<String, Object> data = new HashMap<>();
 
-        Callable<List> bannerListCallable = () -> adService.queryIndex();
-
         Callable<List> channelListCallable = () -> categoryService.queryChannel();
 
         Callable<List> couponListCallable;
@@ -109,7 +108,6 @@ public class WxHomeController {
 
         Callable<List> floorGoodsListCallable = this::getCategoryList;
 
-        FutureTask<List> bannerTask = new FutureTask<>(bannerListCallable);
         FutureTask<List> channelTask = new FutureTask<>(channelListCallable);
         FutureTask<List> couponListTask = new FutureTask<>(couponListCallable);
         FutureTask<List> newGoodsListTask = new FutureTask<>(newGoodsListCallable);
@@ -119,7 +117,6 @@ public class WxHomeController {
         FutureTask<List> grouponListTask = new FutureTask<>(grouponListCallable);
         FutureTask<List> floorGoodsListTask = new FutureTask<>(floorGoodsListCallable);
 
-        executorService.submit(bannerTask);
         executorService.submit(channelTask);
         executorService.submit(couponListTask);
         executorService.submit(newGoodsListTask);
@@ -130,7 +127,6 @@ public class WxHomeController {
         executorService.submit(floorGoodsListTask);
 
         try {
-            data.put("banner", bannerTask.get());
             data.put("channel", channelTask.get());
             data.put("couponList", couponListTask.get());
             data.put("newGoodsList", newGoodsListTask.get());

@@ -181,7 +181,7 @@ public class WxGoodsController {
 			data.put("info", info);
 			data.put("userHasCollect", userHasCollect);
 			data.put("issue", issueCallableTask.get());
-			data.put("comment", commentsCallableTsk.get());
+			data.put("comment", commentsCallableTsk == null ? null : commentsCallableTsk.get());
 			data.put("specificationList", objectCallableTask.get());
 			data.put("productList", productListCallableTask.get());
 			data.put("attribute", goodsAttributeListTask.get());
