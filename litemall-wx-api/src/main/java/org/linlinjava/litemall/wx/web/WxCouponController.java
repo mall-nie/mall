@@ -9,7 +9,6 @@ import org.linlinjava.litemall.core.validator.Sort;
 import org.linlinjava.litemall.db.domain.LitemallCart;
 import org.linlinjava.litemall.db.domain.LitemallCoupon;
 import org.linlinjava.litemall.db.domain.LitemallCouponUser;
-import org.linlinjava.litemall.db.domain.LitemallGrouponRules;
 import org.linlinjava.litemall.db.service.*;
 import org.linlinjava.litemall.db.util.CouponConstant;
 import org.linlinjava.litemall.wx.annotation.LoginUser;
@@ -40,8 +39,6 @@ public class WxCouponController {
     private LitemallCouponService couponService;
     @Autowired
     private LitemallCouponUserService couponUserService;
-    @Autowired
-    private LitemallGrouponRulesService grouponRulesService;
     @Autowired
     private LitemallCartService cartService;
     @Autowired
@@ -139,10 +136,6 @@ public class WxCouponController {
 
         // 团购优惠
         BigDecimal grouponPrice = new BigDecimal(0.00);
-        LitemallGrouponRules grouponRules = grouponRulesService.queryById(grouponRulesId);
-        if (grouponRules != null) {
-            grouponPrice = grouponRules.getDiscount();
-        }
 
         // 商品价格
         List<LitemallCart> checkedGoodsList = null;
@@ -158,12 +151,7 @@ public class WxCouponController {
         }
         BigDecimal checkedGoodsPrice = new BigDecimal(0.00);
         for (LitemallCart cart : checkedGoodsList) {
-            //  只有当团购规格商品ID符合才进行团购优惠
-            if (grouponRules != null && grouponRules.getGoodsId().equals(cart.getGoodsId())) {
-                checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().subtract(grouponPrice).multiply(new BigDecimal(cart.getNumber())));
-            } else {
-                checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
-            }
+            checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
         }
 
         // 计算优惠券可用情况

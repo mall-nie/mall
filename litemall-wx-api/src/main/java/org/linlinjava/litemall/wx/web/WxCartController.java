@@ -40,8 +40,6 @@ public class WxCartController {
     @Autowired
     private LitemallAddressService addressService;
     @Autowired
-    private LitemallGrouponRulesService grouponRulesService;
-    @Autowired
     private LitemallCouponService couponService;
     @Autowired
     private LitemallCouponUserService couponUserService;
@@ -404,12 +402,6 @@ public class WxCartController {
             }
         }
 
-        // 团购优惠
-        BigDecimal grouponPrice = new BigDecimal(0.00);
-        LitemallGrouponRules grouponRules = grouponRulesService.queryById(grouponRulesId);
-        if (grouponRules != null) {
-            grouponPrice = grouponRules.getDiscount();
-        }
 
         // 商品价格
         List<LitemallCart> checkedGoodsList = null;
@@ -425,12 +417,8 @@ public class WxCartController {
         }
         BigDecimal checkedGoodsPrice = new BigDecimal(0.00);
         for (LitemallCart cart : checkedGoodsList) {
-            //  只有当团购规格商品ID符合才进行团购优惠
-            if (grouponRules != null && grouponRules.getGoodsId().equals(cart.getGoodsId())) {
-                checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().subtract(grouponPrice).multiply(new BigDecimal(cart.getNumber())));
-            } else {
-                checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
-            }
+            //删除团购
+            checkedGoodsPrice = checkedGoodsPrice.add(cart.getPrice().multiply(new BigDecimal(cart.getNumber())));
         }
 
         // 计算优惠券可用情况
@@ -489,7 +477,6 @@ public class WxCartController {
         Map<String, Object> data = new HashMap<>();
         data.put("addressId", addressId);
         data.put("grouponRulesId", grouponRulesId);
-        data.put("grouponPrice", grouponPrice);
         data.put("checkedAddress", checkedAddress);
         data.put("couponId", couponId);
         data.put("availableCouponLength", availableCouponLength);

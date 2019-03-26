@@ -44,9 +44,6 @@ public class WxHomeController {
     private LitemallCategoryService categoryService;
 
     @Autowired
-    private LitemallGrouponRulesService grouponRulesService;
-
-    @Autowired
     private LitemallCouponService couponService;
 
     private final static ArrayBlockingQueue<Runnable> WORK_QUEUE = new ArrayBlockingQueue<>(9);
@@ -99,9 +96,6 @@ public class WxHomeController {
 
         Callable<List> topicListCallable = () -> topicService.queryList(0, SystemConfig.getTopicLimit());
 
-        //团购专区
-        Callable<List> grouponListCallable = () -> grouponRulesService.queryList(0, 5);
-
         Callable<List> floorGoodsListCallable = this::getCategoryList;
 
         FutureTask<List> channelTask = new FutureTask<>(channelListCallable);
@@ -110,7 +104,6 @@ public class WxHomeController {
         FutureTask<List> hotGoodsListTask = new FutureTask<>(hotGoodsListCallable);
         FutureTask<List> brandListTask = new FutureTask<>(brandListCallable);
         FutureTask<List> topicListTask = new FutureTask<>(topicListCallable);
-        FutureTask<List> grouponListTask = new FutureTask<>(grouponListCallable);
         FutureTask<List> floorGoodsListTask = new FutureTask<>(floorGoodsListCallable);
 
         executorService.submit(channelTask);
@@ -119,7 +112,6 @@ public class WxHomeController {
         executorService.submit(hotGoodsListTask);
         executorService.submit(brandListTask);
         executorService.submit(topicListTask);
-        executorService.submit(grouponListTask);
         executorService.submit(floorGoodsListTask);
 
         try {
@@ -129,7 +121,6 @@ public class WxHomeController {
             data.put("hotGoodsList", hotGoodsListTask.get());
             data.put("brandList", brandListTask.get());
             data.put("topicList", topicListTask.get());
-            data.put("grouponList", grouponListTask.get());
             data.put("floorGoodsList", floorGoodsListTask.get());
         }
         catch (Exception e) {
