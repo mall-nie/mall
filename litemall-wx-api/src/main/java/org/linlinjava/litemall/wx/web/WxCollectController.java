@@ -118,4 +118,32 @@ public class WxCollectController {
         data.put("type", handleType);
         return ResponseUtil.ok(data);
     }
+
+
+    /**
+     * 收藏状态
+     * @param userId
+     * @param body
+     * @return
+     */
+    @PostMapping("status")
+    public Object status(@LoginUser Integer userId, @RequestBody String body) {
+        if (userId == null) {
+            return ResponseUtil.unlogin();
+        }
+
+        Byte type = JacksonUtil.parseByte(body, "type");
+        Integer valueId = JacksonUtil.parseInteger(body, "valueId");
+        if (!ObjectUtils.allNotNull(type, valueId)) {
+            return ResponseUtil.badArgument();
+        }
+        LitemallCollect collect = collectService.queryByTypeAndValue(userId, type, valueId);
+        Integer status = collect == null ? 0 : 1;
+        Map<String, Object> data = new HashMap<>(2);
+        data.put("status", status);
+        return ResponseUtil.ok(data);
+    }
+
+
+
 }
