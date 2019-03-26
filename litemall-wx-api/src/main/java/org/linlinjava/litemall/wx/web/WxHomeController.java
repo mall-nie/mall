@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.linlinjava.litemall.core.system.SystemConfig;
 import org.linlinjava.litemall.core.util.ResponseUtil;
-import org.linlinjava.litemall.db.domain.LitemallAd;
 import org.linlinjava.litemall.db.domain.LitemallCategory;
 import org.linlinjava.litemall.db.domain.LitemallGoods;
 import org.linlinjava.litemall.db.service.*;
@@ -31,9 +30,6 @@ import java.util.concurrent.*;
 @Validated
 public class WxHomeController {
     private final Log logger = LogFactory.getLog(WxHomeController.class);
-
-    @Autowired
-    private LitemallAdService adService;
 
     @Autowired
     private LitemallGoodsService goodsService;
