@@ -134,9 +134,6 @@ public class WxCouponController {
             return ResponseUtil.unlogin();
         }
 
-        // 团购优惠
-        BigDecimal grouponPrice = new BigDecimal(0.00);
-
         // 商品价格
         List<LitemallCart> checkedGoodsList = null;
         if (cartId == null || cartId.equals(0)) {
