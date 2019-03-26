@@ -71,9 +71,6 @@ public class WxGoodsController {
 	@Autowired
 	private LitemallGoodsSpecificationService goodsSpecificationService;
 
-	@Autowired
-	private LitemallGrouponRulesService rulesService;
-
 	private final static ArrayBlockingQueue<Runnable> WORK_QUEUE = new ArrayBlockingQueue<>(9);
 
 	private final static RejectedExecutionHandler HANDLER = new ThreadPoolExecutor.CallerRunsPolicy();
@@ -141,8 +138,6 @@ public class WxGoodsController {
 			return commentList;
 		};
 
-		//团购信息
-		Callable<List> grouponRulesCallable = () ->rulesService.queryByGoodsId(id);
 
 		// 用户收藏
 		int userHasCollect = 0;
@@ -165,7 +160,6 @@ public class WxGoodsController {
 		FutureTask<List> issueCallableTask = new FutureTask<>(issueCallable);
 		FutureTask<Map> commentsCallableTsk = new FutureTask<>(commentsCallable);
 		FutureTask<LitemallBrand> brandCallableTask = new FutureTask<>(brandCallable);
-        FutureTask<List> grouponRulesCallableTask = new FutureTask<>(grouponRulesCallable);
 
 		executorService.submit(goodsAttributeListTask);
 		executorService.submit(objectCallableTask);
@@ -173,7 +167,6 @@ public class WxGoodsController {
 		executorService.submit(issueCallableTask);
 		executorService.submit(commentsCallableTsk);
 		executorService.submit(brandCallableTask);
-		executorService.submit(grouponRulesCallableTask);
 
 		Map<String, Object> data = new HashMap<>();
 
@@ -181,12 +174,11 @@ public class WxGoodsController {
 			data.put("info", info);
 			data.put("userHasCollect", userHasCollect);
 			data.put("issue", issueCallableTask.get());
-			data.put("comment", commentsCallableTsk.get());
+			data.put("comment", commentsCallableTsk == null ? null : commentsCallableTsk.get());
 			data.put("specificationList", objectCallableTask.get());
 			data.put("productList", productListCallableTask.get());
 			data.put("attribute", goodsAttributeListTask.get());
 			data.put("brand", brandCallableTask.get());
-			data.put("groupon", grouponRulesCallableTask.get());
 		}
 		catch (Exception e) {
 			e.printStackTrace();

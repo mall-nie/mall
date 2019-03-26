@@ -32,9 +32,6 @@ public class WxHomeController {
     private final Log logger = LogFactory.getLog(WxHomeController.class);
 
     @Autowired
-    private LitemallAdService adService;
-
-    @Autowired
     private LitemallGoodsService goodsService;
 
     @Autowired
@@ -45,9 +42,6 @@ public class WxHomeController {
 
     @Autowired
     private LitemallCategoryService categoryService;
-
-    @Autowired
-    private LitemallGrouponRulesService grouponRulesService;
 
     @Autowired
     private LitemallCouponService couponService;
@@ -84,8 +78,6 @@ public class WxHomeController {
 
         Map<String, Object> data = new HashMap<>();
 
-        Callable<List> bannerListCallable = () -> adService.queryIndex();
-
         Callable<List> channelListCallable = () -> categoryService.queryChannel();
 
         Callable<List> couponListCallable;
@@ -104,40 +96,31 @@ public class WxHomeController {
 
         Callable<List> topicListCallable = () -> topicService.queryList(0, SystemConfig.getTopicLimit());
 
-        //团购专区
-        Callable<List> grouponListCallable = () -> grouponRulesService.queryList(0, 5);
-
         Callable<List> floorGoodsListCallable = this::getCategoryList;
 
-        FutureTask<List> bannerTask = new FutureTask<>(bannerListCallable);
         FutureTask<List> channelTask = new FutureTask<>(channelListCallable);
         FutureTask<List> couponListTask = new FutureTask<>(couponListCallable);
         FutureTask<List> newGoodsListTask = new FutureTask<>(newGoodsListCallable);
         FutureTask<List> hotGoodsListTask = new FutureTask<>(hotGoodsListCallable);
         FutureTask<List> brandListTask = new FutureTask<>(brandListCallable);
         FutureTask<List> topicListTask = new FutureTask<>(topicListCallable);
-        FutureTask<List> grouponListTask = new FutureTask<>(grouponListCallable);
         FutureTask<List> floorGoodsListTask = new FutureTask<>(floorGoodsListCallable);
 
-        executorService.submit(bannerTask);
         executorService.submit(channelTask);
         executorService.submit(couponListTask);
         executorService.submit(newGoodsListTask);
         executorService.submit(hotGoodsListTask);
         executorService.submit(brandListTask);
         executorService.submit(topicListTask);
-        executorService.submit(grouponListTask);
         executorService.submit(floorGoodsListTask);
 
         try {
-            data.put("banner", bannerTask.get());
             data.put("channel", channelTask.get());
             data.put("couponList", couponListTask.get());
             data.put("newGoodsList", newGoodsListTask.get());
             data.put("hotGoodsList", hotGoodsListTask.get());
             data.put("brandList", brandListTask.get());
             data.put("topicList", topicListTask.get());
-            data.put("grouponList", grouponListTask.get());
             data.put("floorGoodsList", floorGoodsListTask.get());
         }
         catch (Exception e) {

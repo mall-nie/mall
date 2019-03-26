@@ -4,7 +4,6 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.linlinjava.litemall.core.storage.StorageService;
 import org.linlinjava.litemall.core.system.SystemConfig;
-import org.linlinjava.litemall.db.domain.LitemallGroupon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -24,30 +23,6 @@ public class QCodeService {
     private StorageService storageService;
 
 
-    public String createGrouponShareImage(String goodName, String goodPicUrl, LitemallGroupon groupon) {
-        try {
-            //创建该商品的二维码
-            File file = wxMaService.getQrcodeService().createWxaCodeUnlimit("groupon," + groupon.getId(), "pages/index/index");
-            FileInputStream inputStream = new FileInputStream(file);
-            //将商品图片，商品名字,商城名字画到模版图中
-            byte[] imageData = drawPicture(inputStream, goodPicUrl, goodName);
-            ByteArrayInputStream inputStream2 = new ByteArrayInputStream(imageData);
-            //存储分享图
-            String url = storageService.store(inputStream2, imageData.length, "image/jpeg", getKeyName(groupon.getId().toString()));
-
-            return url;
-        } catch (WxErrorException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return "";
-    }
-
-
     /**
      * 创建商品分享图
      *
@@ -56,8 +31,9 @@ public class QCodeService {
      * @param goodName
      */
     public String createGoodShareImage(String goodId, String goodPicUrl, String goodName) {
-        if (!SystemConfig.isAutoCreateShareImage())
+        if (!SystemConfig.isAutoCreateShareImage()){
             return "";
+        }
 
         try {
             //创建该商品的二维码
