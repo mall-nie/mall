@@ -100,28 +100,26 @@ public class WxCollectController {
         }
 
         LitemallCollect collect = collectService.queryByTypeAndValue(userId, type, valueId);
-
-        String handleType = null;
+        Integer status;
         if (collect != null) {
-            handleType = "delete";
             collectService.deleteById(collect.getId());
+            status = 0;
         } else {
-            handleType = "add";
             collect = new LitemallCollect();
             collect.setUserId(userId);
             collect.setValueId(valueId);
             collect.setType(type);
             collectService.add(collect);
+            status = 1;
         }
-
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("type", handleType);
+        Map<String, Object> data = new HashMap<>(2);
+        data.put("status", status);
         return ResponseUtil.ok(data);
     }
 
 
     /**
-     * 收藏状态
+     * 收藏状态 0未收藏 1已收藏
      * @param userId
      * @param body
      * @return
