@@ -1,6 +1,6 @@
 package org.linlinjava.litemall.wx.interceptor;
 
-import com.qiniu.util.Json;
+import com.alibaba.fastjson.JSON;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -42,12 +42,26 @@ public class ControllerAop {
     @Order(0)
     @Around("allIntercept()")
     public Object doAllIntercept(ProceedingJoinPoint joinPoint)throws Throwable {
-        HttpServletRequest request = RequestUtils.getHttpRequest();
-        String uri = request.getRequestURI();
-        String api = uri.substring(request.getRequestURI().lastIndexOf("/") + 1);
-        logger.info("请求信息：IP:{},API:{}, param:{}", RequestUtils.getIpAddress(request),api, Json.encode(joinPoint.getArgs()));
         try {
-            return joinPoint.proceed();
+            HttpServletRequest request = RequestUtils.getHttpRequest();
+            String uri = request.getRequestURI();
+            String api = uri.substring(request.getRequestURI().lastIndexOf("/") + 1);
+            //入参处理
+            StringBuffer argsBuffer = new StringBuffer();
+            Object[] args = joinPoint.getArgs();
+            if (args != null) {
+                for (Object arg : args) {
+                    try {
+                        argsBuffer.append(JSON.toJSONString(joinPoint.getArgs())).append(", ");
+                    } catch (Exception e) {
+                        argsBuffer.append(arg.toString()).append(", ");
+                    }
+                }
+            }
+            logger.info("请求：IP:{},API:{}, param:{}", RequestUtils.getIpAddress(request),api, argsBuffer);
+            Object proceed = joinPoint.proceed();
+            logger.info("响应：param:{}", JSON.toJSONString(proceed));
+            return proceed;
         }catch (Throwable e){
             logger.error("errormsg:{}",e);
             throw e;
