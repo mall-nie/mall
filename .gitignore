@@ -3,4 +3,5 @@
 /storage/
 *.iml
 .idea
+*.log
 

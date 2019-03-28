@@ -4,9 +4,9 @@ spring:
   messages:
     encoding: UTF-8
 
-logging:
-  level:
-    root:  ERROR
-    org.springframework:  ERROR
-    org.mybatis:  ERROR
-    org.linlinjava.litemall.core:  DEBUG
+#logging:
+#  level:
+#    root:  ERROR
+#    org.springframework:  ERROR
+#    org.mybatis:  ERROR
+#    org.linlinjava.litemall.core:  DEBUG
